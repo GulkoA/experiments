@@ -1,0 +1,67 @@
+body {
+    background-color: #000000;
+    font-family: 'Open Sans', sans-serif;
+    font-size: 16px;
+    line-height: 1.5;
+    color: #ffffff;
+    margin: 0;
+    padding: 0;
+}
+
+a {
+    color: #ffffff;
+    text-decoration: none;
+}
+
+h1 {
+    margin: 0;
+}
+
+h2 {
+    margin: 0;
+}
+
+canvas {
+    width: 100vw;
+    height: 101vh;
+    background-color: black;
+}
+
+.no-overflow {
+    overflow: hidden;
+}
+
+.center {
+    text-align: center;
+    margin: auto;
+    width: fit-content;
+    justify-content: center;
+}
+
+.title {
+    padding: 20px;
+}
+
+.container {
+    width: 50%;
+    padding: 0 20px;
+    display: flex;
+}
+
+
+.block {
+    display: block;
+    border: 1px solid #ffffff;
+    width: fit-content;
+    height: fit-content;
+    margin: 10px;
+    padding: 20px;
+    border-radius: 20px;
+}
+
+img.preview {
+    width: 256px;
+    height: 256px;
+    display: block;
+    margin: auto;
+}
