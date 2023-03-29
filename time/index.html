@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body, html {
+            min-height: 100%;
+            padding: 0;
+            margin: 0;
+            height: 100%;
+            scroll-behavior: smooth;
+        }
+        .background-image{
+            background-image: url("./space.jpg");
+            background-size: cover;
+            background-repeat: no-repeat;
+            background-position: center;
+            z-index: -1;
+            position: fixed;
+            min-height: 100%;
+            min-width: 100%;
+            margin: 0;
+            top: 0;
+        }
+
+        .floatingThing {
+            top: 0;
+            position: fixed;
+            z-index: 2;
+            width: 100%;
+            height: 40%;
+            margin: 0;
+        }
+
+        .floatButton {
+            margin-right: 5px;
+            margin-left: 90%;
+            border-radius: 10px;
+            border-style: none;
+            background-color: white;
+            opacity: 0.5;
+            cursor: pointer;
+            z-index: 5;
+        }
+
+        .floatButton:hover{
+            opacity: 1;
+        }
+
+        .block {
+            position: relative;
+            margin: 0;
+            width: 100%;
+            height: 100%;
+            padding-top: 30%;
+        }
+        
+        .footer {
+            background-color: rgba(0, 0, 0, 0.42);
+            z-index: 3;
+            padding-top: 22%;
+        }
+
+        h1 {
+            color: white;
+            font-size: 700%;
+            font-family: serif;
+            text-align: center;
+        }
+
+        h2 {
+            color: white;
+            font-size: 170%;
+            font-family: serif;
+            text-align: center;
+        }
+
+        p {
+            color: white;
+            font-size: medium;
+            font-family: serif;
+            text-align: center;
+        }
+
+        a {
+            color: lightblue;
+        }
+    </style>
+    <title>time</title>
+</head>
+<body>
+    <div class="background-image"></div>
+    <div class="floatingThing">
+        <button id="muteButton" class="floatButton">mute</button>
+        <h1 id="time" class="time">time</h1>
+    </div>
+
+        <div class="block">
+            <h2>above you can see the amount of seconds passed since January 1st, 1970</h2>
+        </div>
+
+        <div class="block">
+            <h2>this variable is used in JavaScript and some other languages to count time</h2>
+        </div>
+
+        <div class="block">
+            <h2>the number is always increasing and there is never way back</h2>
+        </div>
+
+        <div class="block">
+            <h2>the time is passing, you cannot stop it</h2>
+            <h2>the only thing you can change is how you spend it</h2>
+        </div>
+
+        <div class="block">
+            <h2>you are the only person who can really choose how to spend your time</h2>
+            <h2>other people can only influence your decisions</h2>
+        </div>
+
+        <div class="block">
+            <h2>your time on Earth is limited to some amount of seconds</h2>
+            <h2>and so for everyone</h2>
+        </div>
+
+        <div class="block">
+            <h2>spend it only the way you won't regret</h2>
+        </div>
+
+        <div class="block">
+            <h2>don't waste it</h2>
+        </div>
+
+        <div class="block footer">
+            <h2>Made by Alex Gulko in 2021</h2>
+            <p>Space photo by <a href="https://www.esa.int/ESA_Multimedia/Images/2020/12/The_colour_of_the_sky_from_Gaia_s_Early_Data_Release_3">ESA</a></p>
+            <!-- <p>Inspired by the universe</p> -->
+        </div>
+
+
+    
+</body>
+<script src="index.js"></script>
+</html>

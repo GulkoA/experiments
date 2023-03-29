@@ -51,12 +51,20 @@ canvas {
 
 .block {
     display: block;
-    border: 1px solid #ffffff;
+    border: 1px solid #ffffff69;
     width: fit-content;
     height: fit-content;
     margin: 10px;
     padding: 20px;
-    border-radius: 20px;
+    border-radius: 10px;
+}
+
+.hover-light-highlight {
+    transition: 0.3s;
+}
+.hover-light-highlight:hover {
+    box-shadow: #ffffff 0px 0px 15px 0px;
+    padding: 25px;
 }
 
 img.preview {

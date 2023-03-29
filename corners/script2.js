@@ -14,6 +14,7 @@ ctx.fillStyle = 'green';
 ctx.lineWidth = 9
 length = 100
 
+let i = 0 
 setInterval(function() {
     ctx.beginPath()
     ctx.moveTo(dot.x, dot.y)
@@ -37,5 +38,13 @@ setInterval(function() {
     if (dot.y > canvas.height) {
         dot.y = canvas.height
         dir.y *= -1
+    }
+
+    i++
+    // change color
+    ctx.strokeStyle = 'hsl(' + i + ', 100%, 50%)'
+
+    if (i > 360) {
+        i = 0
     }
 }, 10)
