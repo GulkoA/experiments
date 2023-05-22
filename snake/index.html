@@ -63,6 +63,11 @@
       </div>
 
       <div class="setting">
+        <label for="stepMode">Step-by-step mode</label>
+        <input type="checkbox" id="stepMode" />
+      </div>
+
+      <div class="setting">
         <label for="roundedCorners">Rounded corners</label>
         <input type="checkbox" id="roundedCorners" checked />
       </div>
@@ -84,6 +89,7 @@
     <script>
       let options = {
         speed: 1,
+        stepMode: false,
         teleport: true,
         autopilot: false,
         roundedCorners: true,
@@ -109,6 +115,17 @@
         }
 
         options.speed = e.target.value;
+      });
+
+      const stepModeInput = document.getElementById("stepMode");
+      options.stepMode = stepModeInput.checked;
+      speedInput.disabled = options.stepMode;
+      stepModeInput.addEventListener("change", function (e) {
+        options.stepMode = e.target.checked;
+        speedInput.disabled = options.stepMode;
+        if (!options.stepMode) {
+            requestAnimationFrame(loop);
+        }
       });
 
       const roundedCornersInput = document.getElementById("roundedCorners");
@@ -192,12 +209,16 @@
         pixelMargin = grid / 20;
         pixelRadius = grid / 3 - pixelMargin;
 
-        snake.x = Math.floor(nPixels / 2);
-        snake.y = Math.floor(nPixels / 2);
-        snake.cells = [];
-        snake.maxCells = 4;
-        snake.dx = 1;
-        snake.dy = 0;
+        snake = {
+          x: Math.floor(nPixels / 2),
+          y: Math.floor(nPixels / 2),
+          cells: [],
+          maxCells: 4,
+          dx: 1,
+          dy: 0,
+          dir: snakeDirEnum.right,
+          lastMovementDir: snakeDirEnum.right,
+        }
 
         score = 0;
 
@@ -208,7 +229,7 @@
         do {
           apple.x = getRandomInt(0, nPixels);
           apple.y = getRandomInt(0, nPixels);
-        } while (collidesWithSnake(apple.x, apple.y));
+        } while (collidesWithSnakeOrWalls(apple.x, apple.y));
       }
 
       function splashScreen(title, subtitle, titleColor="white", subtitleColor="white") {
@@ -254,24 +275,68 @@
         gameState = newState;
       }
 
-      function collidesWithSnake(x, y) {
-        if (x < 0) x = nPixels - 1;
-        if (x >= nPixels) x = 0;
-        if (y < 0) y = nPixels - 1;
-        if (y >= nPixels) y = 0;
+      function collidesWithSnakeOrWalls(x, y) {
+        if (options.teleport) {
+          if (x < 0) x = nPixels - 1;
+          else if (x >= nPixels) x = 0;
+          if (y < 0) y = nPixels - 1;
+          else if (y >= nPixels) y = 0;
+        } else if (x < 0 || x >= nPixels || y < 0 || y >= nPixels) {
+          return true;
+        }
         return snake.cells.some((cell) => {
           return cell.x === x && cell.y === y;
         });
       }
 
+      const snakeDirEnum = {
+        up: 0,
+        right: 1,
+        down: 2,
+        left: 3,
+      }
+
+      function setSnakeDir(dir) {
+        switch (dir) {
+          case snakeDirEnum.up:
+            if (snake.lastMovementDir !== snakeDirEnum.down) {
+              snake.dx = 0;
+              snake.dy = -1;
+              snake.dir = dir;
+            }
+            break;
+          case snakeDirEnum.down:
+            if (snake.lastMovementDir !== snakeDirEnum.up) {
+              snake.dx = 0;
+              snake.dy = 1;
+              snake.dir = dir;
+            }
+            break;
+          case snakeDirEnum.left:
+            if (snake.lastMovementDir !== snakeDirEnum.right) {
+              snake.dx = -1;
+              snake.dy = 0;
+              snake.dir = dir;
+            }
+            break;
+          case snakeDirEnum.right:
+            if (snake.lastMovementDir !== snakeDirEnum.left) {
+              snake.dx = 1;
+              snake.dy = 0;
+              snake.dir = dir;
+            }
+            break;
+        }
+      }
+
       // game loop
       function loop() {
-        if (gameState === gameStateEnum.playing) {
+        if (gameState === gameStateEnum.playing && !options.stepMode) {
           requestAnimationFrame(loop);
         }
 
         // slow game loop to 15 fps instead of 60 (60/15 = 4)
-        if (++count < 5 / options.speed) {
+        if (!options.stepMode && ++count < 5 / options.speed) {
           return;
         }
 
@@ -281,6 +346,7 @@
         // move snake by it's velocity
         snake.x += snake.dx;
         snake.y += snake.dy;
+        snake.lastMovementDir = snake.dir;
 
         // wrap snake position horizontally on edge of screen
         if (snake.x < 0 && options.teleport) {
@@ -367,50 +433,40 @@
 
         // autopilot
         if (options.autopilot) {
+          const deltaX = apple.x - snake.x;
+          const deltaY = apple.y - snake.y;
+          const halfField = Math.floor(nPixels / 2);
           // move towards the apple
-          if (snake.x < apple.x) {
-            snake.dx = 1;
-            snake.dy = 0;
-            if (options.teleport && apple.x - snake.x > nPixels / 2) {
-              snake.dx *= -1;
+          if (options.teleport) {
+            if (deltaX > 0 && deltaX < halfField) {
+              setSnakeDir(snakeDirEnum.right);
+            } else if (deltaX !== 0) {
+              setSnakeDir(snakeDirEnum.left);
+            } else if (deltaY > 0 && deltaY < halfField) {
+              setSnakeDir(snakeDirEnum.down);
+            } else if (deltaY !== 0) {
+              setSnakeDir(snakeDirEnum.up);
             }
-          } else if (snake.x > apple.x) {
-            snake.dx = -1;
-            snake.dy = 0;
-            if (options.teleport && apple.x - snake.x > nPixels / 2) {
-              snake.dx *= -1;
-            }
-          } else if (snake.y < apple.y) {
-            snake.dy = 1;
-            snake.dx = 0;
-            if (options.teleport && apple.y - snake.y > nPixels / 2) {
-              snake.dy *= -1;
-            }
-          } else if (snake.y > apple.y) {
-            snake.dy = -1;
-            snake.dx = 0;
-            if (options.teleport && apple.y - snake.y > nPixels / 2) {
-              snake.dy *= -1;
+          } else {
+            if (deltaX < 0) {
+              setSnakeDir(snakeDirEnum.left);
+            } else if (deltaX > 0) {
+              setSnakeDir(snakeDirEnum.right);
+            } else if (deltaY < 0) {
+              setSnakeDir(snakeDirEnum.up);
+            } else if (deltaY > 0) {
+              setSnakeDir(snakeDirEnum.down);
             }
           }
           
           // check if we're going to collide with ourselves
           let iterations = 0;
-          while (iterations < 4 && collidesWithSnake(snake.x + snake.dx, snake.y + snake.dy)) {
+          let snakeDir = snake.dir;
+          while (iterations < 4 && collidesWithSnakeOrWalls(snake.x + snake.dx, snake.y + snake.dy)) {
             // if we are, try going a different direction
-            if (snake.dy === -1) {
-              snake.dx = 1;
-              snake.dy = 0;
-            } else if (snake.dx === 1) {
-              snake.dy = 1;
-              snake.dx = 0;
-            } else if (snake.dy === 1) {
-              snake.dx = -1;
-              snake.dy = 0;
-            } else if (snake.dx === -1) {
-              snake.dy = -1;
-              snake.dx = 0;
-            }
+            setSnakeDir(snakeDir);
+            snakeDir = (snakeDir + 1) % 4;
+            console.log("Collided with self, trying new direction " + snakeDir)
             iterations++;
           }
         }
@@ -429,28 +485,28 @@
         }
         
         // left arrow key
-        if (e.which === 37 && snake.dx === 0) {
-          snake.dx = -1;
-          snake.dy = 0;
+        if (e.which === 37) {
+          setSnakeDir(snakeDirEnum.left)
         }
         // up arrow key
-        else if (e.which === 38 && snake.dy === 0) {
-          snake.dy = -1;
-          snake.dx = 0;
+        else if (e.which === 38) {
+          setSnakeDir(snakeDirEnum.up)
         }
         // right arrow key
-        else if (e.which === 39 && snake.dx === 0) {
-          snake.dx = 1;
-          snake.dy = 0;
+        else if (e.which === 39) {
+          setSnakeDir(snakeDirEnum.right)
         }
         // down arrow key
-        else if (e.which === 40 && snake.dy === 0) {
-          snake.dy = 1;
-          snake.dx = 0;
+        else if (e.which === 40) {
+          setSnakeDir(snakeDirEnum.down)
         }
         // escape
         else if (e.which === 27) {
           setGameState(gameStateEnum.pause);
+        }
+
+        if (options.stepMode) {
+          loop();
         }
       });
 
